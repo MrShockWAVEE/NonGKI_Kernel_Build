@@ -165,13 +165,11 @@ jobs:
       if: env.ENABLE_KERNELSU == 'true'
       run: |
         cd $GITHUB_WORKSPACE/kernel_workspace/android-kernel
-        curl -LSs "https://raw.githubusercontent.com/rifsxd/KernelSU-Next/next/kernel/setup.sh" | bash -s next
+        curl -LSs "https://raw.githubusercontent.com/ShirkNeko/SukiSU-Ultra/main/kernel/setup.sh" | bash -s susfs-dev
         if [ -d KernelSU ]; then
             KSU_VERSION="_$(cd KernelSU && expr $(/usr/bin/git rev-list --count HEAD) + 10200)"
         else
-            KSU_VERSION=""
-        cd KernelSU-Next
-        git apply $GITHUB_WORKSPACE/patches/SUSFS_KSUN.patch    
+            KSU_VERSION=""       
         fi
         echo "UPLOADNAME=-KernelSU$KSU_VERSION" >> $GITHUB_ENV
         if [ ${{ env.KSU_REVERT }} = true ]; then
@@ -215,7 +213,10 @@ jobs:
                       CONFIG_KSU_SUSFS_SPOOF_PROC_CMDLINE=y \
                       CONFIG_KSU_SUSFS_OPEN_REDIRECT=y \
                       CONFIG_KSU_SUSFS_SUS_SU=y \
-                      CONFIG_WITH_KPROBES=n
+                      CONFIG_WITH_KPROBES=n \
+                      CONFIG_KPM=y \
+                      CONFIG_KALLSYMS=y \
+                      CONFIG_KALLSYMS_ALL=y
         do
         echo "$config" >> arch/${{ env.KERNEL_ARCH }}/configs/${{ env.KERNEL_CONFIG }}
         done
